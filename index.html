@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Pokemaths</title>
+
+<!-- iPadOS 15 reads these, not the web manifest, when you Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pokemaths">
+<meta name="theme-color" content="#FFE600">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@600;700;800&display=swap">
+<style>
+  :root{
+    --cream:#FFF9F0; --ink:#1A1A2E; --paper:#fff;
+    --yellow:#FFE600; --orange:#FF6B00; --sky:#90E0EF;
+    --lime:#E9FF70; --magenta:#C90076; --red:#AE2012;
+    --teal:#005F73; --indigo:#1C0060;
+    --display:"Bangers","Impact",sans-serif;
+    --body:"Baloo 2","Avenir Next",sans-serif;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0;overflow:hidden}
+  body{
+    background:var(--cream); color:var(--ink);
+    font-family:var(--body); font-weight:700;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .screen.on{display:flex}
+
+  /* --- AKEE primitives: ink border + hard offset shadow, never a blur --- */
+  .pop{border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);background:var(--paper)}
+  .bar{background:var(--yellow);border-bottom:4px solid var(--ink);padding:10px 16px;
+       display:flex;align-items:center;gap:12px;flex:none}
+  .title{font-family:var(--display);font-size:clamp(28px,5vw,46px);letter-spacing:1.5px;
+         text-shadow:3px 3px 0 var(--orange);line-height:1}
+  .sub{font-family:var(--display);font-size:clamp(15px,2.4vw,24px);color:var(--red);letter-spacing:1px}
+  button{font-family:var(--body);border:none;background:none;padding:0;cursor:pointer;color:inherit}
+  .btn{font-family:var(--display);letter-spacing:1px;border:3px solid var(--ink);border-radius:14px;
+       box-shadow:4px 4px 0 var(--ink);background:var(--lime);padding:10px 26px;font-size:clamp(18px,2.6vw,26px)}
+  .btn:active{transform:translate(4px,4px);box-shadow:none}
+  .btn.plain{background:var(--paper)}
+  .btn.sm{font-size:16px;padding:5px 13px;border-width:2px;border-radius:11px;box-shadow:3px 3px 0 var(--ink)}
+
+  /* --- home --- */
+  #home .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,3vh,30px);padding:20px}
+  .stats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .stat{border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);
+        padding:9px 22px;text-align:center;min-width:132px}
+  .stat b{display:block;font-size:11px;letter-spacing:1px;font-weight:800;opacity:.75}
+  .stat i{display:block;font-family:var(--display);font-size:32px;font-style:normal;letter-spacing:1px}
+  #go{background:var(--lime);border:3px solid var(--ink);border-radius:28px;box-shadow:7px 7px 0 var(--ink);
+      padding:22px 74px;text-align:center}
+  #go span{display:block;font-family:var(--display);font-size:clamp(54px,11vw,84px);letter-spacing:4px;line-height:1}
+  #go em{display:block;font-style:normal;font-size:13px;font-weight:800;opacity:.7}
+  #go:active{transform:translate(7px,7px);box-shadow:none}
+  #shieldNote{color:var(--teal);font-weight:800;font-size:15px}
+  .foot{border-top:4px solid var(--ink);background:var(--yellow);padding:11px;display:flex;
+        gap:10px;justify-content:center;flex:none}
+
+  /* --- play --- */
+  #pips{display:flex;gap:4px;flex:1}
+  .pip{flex:1;height:16px;border:2px solid var(--ink);border-radius:5px;background:var(--paper)}
+  .pip.on{background:var(--lime)} .pip.now{background:var(--orange)}
+  #lvl{font-family:var(--display);font-size:22px;letter-spacing:1px;white-space:nowrap}
+  #shield{font-size:22px;color:var(--teal)} #shield.off{opacity:.2}
+  #play .body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,3vh,30px);padding:0 20px;min-height:0}
+  #q{font-family:var(--display);text-align:center;letter-spacing:3px;line-height:1;
+     font-size:clamp(46px,12vw,110px);text-shadow:4px 4px 0 var(--sky)}
+  #answers{display:grid;gap:clamp(8px,1.6vw,14px);justify-content:center}
+  .ans{font-family:var(--display);letter-spacing:1.5px;font-size:clamp(26px,5vw,54px);
+       border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);
+       min-height:clamp(74px,13vh,124px);display:grid;place-items:center}
+  .ans:active{transform:translate(5px,5px);box-shadow:none}
+  .ans.shake{animation:sh .32s}
+  @keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  /* --- overlay --- */
+  #overlay{position:absolute;inset:0;background:var(--cream);display:none;
+           flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;text-align:center}
+  #overlay.on{display:flex}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;opacity:.65}
+  .bighead{font-family:var(--display);font-size:clamp(38px,8vw,64px);letter-spacing:2px;line-height:1}
+  .teach{border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);background:var(--paper);
+         padding:12px 26px;font-family:var(--display);font-size:clamp(26px,5vw,42px);letter-spacing:1.5px}
+  .teach s{color:var(--red);text-decoration:none}
+  .badge{border:2px solid var(--ink);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:800;background:var(--yellow)}
+  #gifFrame{border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);
+            background:var(--indigo);padding:8px;width:min(78vw,420px);aspect-ratio:4/3;display:none}
+  #gifFrame.on{display:block}
+  #gifFrame img{width:100%;height:100%;object-fit:contain;border-radius:10px;display:block}
+  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+  /* --- trophies --- */
+  #trophies{background:var(--indigo)}
+  #trophies .bar{background:var(--yellow)}
+  #tgrid{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;
+         grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:12px;padding:14px;align-content:start}
+  .cell{aspect-ratio:6/5;border-radius:14px;border:3px solid;overflow:hidden;display:grid;place-items:center}
+  .cell.got{border-color:var(--lime);background:#12121e}
+  .cell.locked{border-color:rgba(233,255,112,.28);border-style:dashed;background:rgba(255,255,255,.05);
+               font-family:var(--display);font-size:34px;color:rgba(233,255,112,.3)}
+  .cell img{width:100%;height:100%;object-fit:contain}
+
+  /* --- progress --- */
+  #progress .bar{background:var(--teal)} #progress .bar .title{color:var(--lime);text-shadow:none}
+  #pbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:14px}
+  h2{font-family:var(--display);font-size:24px;letter-spacing:1px;margin:6px 0 0;font-weight:400}
+  .cap{font-size:12px;font-weight:600;opacity:.65;margin:0}
+  .gridwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .grow{display:flex;gap:3px;margin-bottom:3px;align-items:center}
+  .ax{width:20px;font-size:10px;font-weight:800;text-align:right;flex:none}
+  .cellbox{width:22px;height:22px;border-radius:4px;border:1px solid rgba(26,26,46,.35);flex:none}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink);padding:4px 11px;text-align:center;background:var(--paper)}
+  .chip b{display:block;font-family:var(--display);font-size:19px;letter-spacing:1px;font-weight:400}
+  .chip i{font-style:normal;font-size:10px;font-weight:800;opacity:.7}
+  .danger{background:var(--red);color:#fff}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<section id="home" class="screen on">
+  <div class="bar"><span class="title">POKEMATHS</span><span class="sub">times tables</span></div>
+  <div class="body">
+    <div class="stats">
+      <div class="stat" style="background:var(--magenta);color:var(--yellow)" id="lvlStat">
+        <b>LEVEL</b><i id="hLevel">1</i></div>
+      <div class="stat" style="background:var(--sky)"><b>BEST ROUND</b><i id="hBest">—</i></div>
+      <div class="stat" style="background:var(--lime)"><b>DAYS IN A ROW</b><i id="hDays">0</i></div>
+    </div>
+    <button id="go"><span>GO</span><em id="goSub">2 answers · 12 in a row</em></button>
+    <div id="shieldNote">◇ 3 more rounds for a shield</div>
+  </div>
+  <div class="foot">
+    <button class="btn sm plain" id="openTrophies">TROPHY CASE <span id="hTrophy">0/52</span></button>
+  </div>
+</section>
+
+<section id="play" class="screen">
+  <div class="bar"><span id="lvl">LVL 1</span><span id="pips"></span><span id="shield">◆</span></div>
+  <div class="body"><div id="q">7 × 8</div><div id="answers"></div></div>
+  <div id="overlay"></div>
+</section>
+
+<section id="trophies" class="screen">
+  <div class="bar">
+    <button class="btn sm plain" data-home>‹ BACK</button>
+    <span class="title" style="flex:1;font-size:30px">TROPHY CASE</span>
+    <span class="title" style="font-size:24px;color:var(--red);text-shadow:none" id="tCount">0/52</span>
+  </div>
+  <div id="tgrid"></div>
+</section>
+
+<section id="progress" class="screen">
+  <div class="bar">
+    <button class="btn sm plain" data-home>‹ BACK</button>
+    <span class="title" style="font-size:30px">PROGRESS</span>
+  </div>
+  <div id="pbody"></div>
+</section>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
