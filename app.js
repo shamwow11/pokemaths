@@ -264,7 +264,7 @@ function finish(cleared) {
     return
   }
   overlay(`<p class="eyebrow">${isRecord ? 'NEW RECORD · LEVEL ' + lvl.n : 'ROUND CLEARED'}</p>
-    <h2 class="bighead" style="color:${isRecord ? 'var(--magenta)' : 'var(--teal)'}">${fmt(total)}</h2>
+    <h2 class="bighead num" style="color:${isRecord ? 'var(--magenta)' : 'var(--teal)'}">${fmt(total)}</h2>
     ${trophy ? `<div id="gifFrame" class="on"><img alt="" src="trophies/${trophy.file}"></div>`
              : `<p>best is ${fmt(rec.byLevel[lvl.n]?.bestMs)}</p>`}
     ${reasons.map((r) => `<span class="badge">${r}</span>`).join(' ')}

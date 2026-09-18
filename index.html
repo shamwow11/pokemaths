@@ -20,6 +20,7 @@
     --lime:#E9FF70; --magenta:#C90076; --red:#AE2012;
     --teal:#005F73; --indigo:#1C0060;
     --display:"Bangers","Impact",sans-serif;
+    --num:"Baloo 2","Avenir Next",sans-serif;
     --body:"Baloo 2","Avenir Next",sans-serif;
     color-scheme: light;
   }
@@ -48,6 +49,7 @@
        box-shadow:4px 4px 0 var(--ink);background:var(--lime);padding:10px 26px;font-size:clamp(18px,2.6vw,26px)}
   .btn:active{transform:translate(4px,4px);box-shadow:none}
   .btn.plain{background:var(--paper)}
+  .num{font-family:var(--num)}
   .btn.sm{font-size:16px;padding:5px 13px;border-width:2px;border-radius:11px;box-shadow:3px 3px 0 var(--ink)}
 
   /* --- home --- */
@@ -56,7 +58,7 @@
   .stat{border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);
         padding:9px 22px;text-align:center;min-width:132px}
   .stat b{display:block;font-size:11px;letter-spacing:1px;font-weight:800;opacity:.75}
-  .stat i{display:block;font-family:var(--display);font-size:32px;font-style:normal;letter-spacing:1px}
+  .stat i{display:block;font-family:var(--num);font-weight:800;font-size:28px;font-style:normal;letter-spacing:0}
   #go{background:var(--lime);border:3px solid var(--ink);border-radius:28px;box-shadow:7px 7px 0 var(--ink);
       padding:22px 74px;text-align:center}
   #go span{display:block;font-family:var(--display);font-size:clamp(54px,11vw,84px);letter-spacing:4px;line-height:1}
@@ -70,13 +72,13 @@
   #pips{display:flex;gap:4px;flex:1}
   .pip{flex:1;height:16px;border:2px solid var(--ink);border-radius:5px;background:var(--paper)}
   .pip.on{background:var(--lime)} .pip.now{background:var(--orange)}
-  #lvl{font-family:var(--display);font-size:22px;letter-spacing:1px;white-space:nowrap}
+  #lvl{font-family:var(--num);font-weight:800;font-size:19px;letter-spacing:0;white-space:nowrap}
   #shield{font-size:22px;color:var(--teal)} #shield.off{opacity:.2}
   #play .body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,3vh,30px);padding:0 20px;min-height:0}
-  #q{font-family:var(--display);text-align:center;letter-spacing:3px;line-height:1;
-     font-size:clamp(46px,12vw,110px);text-shadow:4px 4px 0 var(--sky)}
+  #q{font-family:var(--num);font-weight:800;text-align:center;letter-spacing:1px;line-height:1.05;
+     font-size:clamp(42px,10.5vw,96px);text-shadow:4px 4px 0 var(--sky)}
   #answers{display:grid;gap:clamp(8px,1.6vw,14px);justify-content:center}
-  .ans{font-family:var(--display);letter-spacing:1.5px;font-size:clamp(26px,5vw,54px);
+  .ans{font-family:var(--num);font-weight:800;letter-spacing:0;font-size:clamp(24px,4.4vw,48px);
        border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);
        min-height:clamp(74px,13vh,124px);display:grid;place-items:center}
   .ans:active{transform:translate(5px,5px);box-shadow:none}
@@ -89,8 +91,9 @@
   #overlay.on{display:flex}
   .eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;opacity:.65}
   .bighead{font-family:var(--display);font-size:clamp(38px,8vw,64px);letter-spacing:2px;line-height:1}
+  .bighead.num{font-family:var(--num);font-weight:800;letter-spacing:0;font-size:clamp(34px,7vw,58px)}
   .teach{border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);background:var(--paper);
-         padding:12px 26px;font-family:var(--display);font-size:clamp(26px,5vw,42px);letter-spacing:1.5px}
+         padding:12px 26px;font-family:var(--num);font-weight:800;font-size:clamp(23px,4.4vw,38px);letter-spacing:0}
   .teach s{color:var(--red);text-decoration:none}
   .badge{border:2px solid var(--ink);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:800;background:var(--yellow)}
   #gifFrame{border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);
@@ -121,7 +124,7 @@
   .cellbox{width:22px;height:22px;border-radius:4px;border:1px solid rgba(26,26,46,.35);flex:none}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink);padding:4px 11px;text-align:center;background:var(--paper)}
-  .chip b{display:block;font-family:var(--display);font-size:19px;letter-spacing:1px;font-weight:400}
+  .chip b{display:block;font-family:var(--num);font-size:18px;letter-spacing:0;font-weight:800}
   .chip i{font-style:normal;font-size:10px;font-weight:800;opacity:.7}
   .danger{background:var(--red);color:#fff}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -142,7 +145,7 @@
     <div id="shieldNote">◇ 3 more rounds for a shield</div>
   </div>
   <div class="foot">
-    <button class="btn sm plain" id="openTrophies">TROPHY CASE <span id="hTrophy">0/52</span></button>
+    <button class="btn sm plain" id="openTrophies">TROPHY CASE <span class="num" style="font-weight:800" id="hTrophy">0/52</span></button>
   </div>
 </section>
 
@@ -156,7 +159,7 @@
   <div class="bar">
     <button class="btn sm plain" data-home>‹ BACK</button>
     <span class="title" style="flex:1;font-size:30px">TROPHY CASE</span>
-    <span class="title" style="font-size:24px;color:var(--red);text-shadow:none" id="tCount">0/52</span>
+    <span class="num" style="font-size:22px;font-weight:800;color:var(--red)" id="tCount">0/52</span>
   </div>
   <div id="tgrid"></div>
 </section>
