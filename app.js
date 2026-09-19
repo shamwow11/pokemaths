@@ -108,7 +108,7 @@ function drawHome() {
 
 /* ------------------------------------------------------------------ play */
 let streak = 0, shields = 0, roundMs = 0, qStart = 0, locked = false
-let question = null, facts = {}, times = [], lastCorrectIndex = null
+let question = null, facts = {}, times = []
 let timers = []
 const later = (fn, ms) => { timers.push(setTimeout(fn, ms)) }
 const clearTimers = () => { timers.forEach(clearTimeout); timers = [] }
@@ -117,7 +117,7 @@ function beginRound() {
   clearTimers()
   const p = me()
   facts = { ...p.facts }
-  times = []; roundMs = 0; streak = 0; lastCorrectIndex = null
+  times = []; roundMs = 0; streak = 0
   shields = p.shields || 0
   $('overlay').classList.remove('on')
   drawShield(); drawPips()
@@ -135,8 +135,7 @@ function ask() {
   const p = me(), lvl = levelFor(p.level), eased = (p.ease || 0) > 0
   const [a, b] = pickFact(facts, lvl, streak === 0, eased)
   const [l, r] = displayOrder(a, b)
-  const { options, correct, correctIndex } = buildOptions(a, b, lvl, eased, lastCorrectIndex)
-  lastCorrectIndex = correctIndex
+  const { options, correct } = buildOptions(a, b, lvl, eased)
   question = { a, b, correct }
   $('lvl').textContent = 'LVL ' + lvl.n
   $('q').textContent = `${l} × ${r}`

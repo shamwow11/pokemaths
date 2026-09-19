@@ -152,16 +152,21 @@ function shuffle(arr) {
   return a
 }
 
-// Twelve correct answers that all land bottom-right teaches the wrong lesson,
-// so keep the correct tile off the position it just used.
-export function buildOptions(a, b, level, eased, avoidIndex) {
+// The correct answer's position is purely random, every question.
+//
+// This used to carry a "position balance" guard that kept the correct tile off
+// the position it had just used. That was a bad idea: with two choices,
+// "never the same place twice" IS "always alternate", so levels 1-2 could be
+// cleared 12-in-a-row by tapping left, right, left, right without reading a
+// single question. Measured repeat rate was 0% at every level.
+//
+// The case it was guarding against — all twelve answers landing in the same
+// spot — has probability (1/2)^11 at two choices and less above that. An
+// occasional run of three on one side is what real randomness looks like;
+// a guaranteed alternation is a pattern a nine-year-old will find.
+export function buildOptions(a, b, level, eased) {
   const correct = a * b
   const opts = shuffle(distractorsFor(a, b, level.choices - 1, level, eased).concat([correct]))
-  const at = opts.indexOf(correct)
-  if (avoidIndex != null && at === avoidIndex && opts.length > 1) {
-    const swap = (at + 1 + Math.floor(Math.random() * (opts.length - 1))) % opts.length
-    ;[opts[at], opts[swap]] = [opts[swap], opts[at]]
-  }
   return { options: opts, correct, correctIndex: opts.indexOf(correct) }
 }
 
