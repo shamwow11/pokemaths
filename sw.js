@@ -1,7 +1,7 @@
 // Offline support. The shell is cached up front so the app opens with no
 // network at all; trophy GIFs are cached lazily as they're earned, because
 // pre-caching 30MB on first load would stall an iPad Air 2.
-const SHELL = 'pokemaths-shell-v1'
+const SHELL = 'pokemaths-shell-v3'
 const MEDIA = 'pokemaths-media-v1'
 const SHELL_FILES = [
   './', './index.html', './app.js', './engine.js',
@@ -42,13 +42,14 @@ self.addEventListener('fetch', (e) => {
     })))
     return
   }
-  // Shell: cache-first for instant launch, refresh in the background.
-  e.respondWith(caches.match(req).then((hit) => {
-    const net = fetch(req).then((res) => {
+  // Shell: network-first with a cache fallback. Cache-first was wrong here —
+  // a redeployed app.js never reached a device that already had the old one,
+  // because the cached copy always won. Offline still works via the fallback.
+  e.respondWith(
+    fetch(req).then((res) => {
       const copy = res.clone()
       caches.open(SHELL).then((c) => c.put(req, copy)).catch(() => {})
       return res
-    }).catch(() => hit)
-    return hit || net
-  }))
+    }).catch(() => caches.match(req))
+  )
 })

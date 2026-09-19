@@ -280,8 +280,25 @@ function drawTrophies() {
   const got = Object.fromEntries(p.trophies.map((t) => [t.gif, t]))
   $('tCount').textContent = `${p.trophies.length}/${TROPHIES.length}`
   $('tgrid').innerHTML = TROPHIES.map((t) => got[t.id]
-    ? `<div class="cell got"><img loading="lazy" alt="" src="trophies/${t.file}"></div>`
-    : '<div class="cell locked">?</div>').join('')
+    ? `<div class="cell got" data-trophy="${t.id}" role="button" tabindex="0">
+         <img loading="lazy" alt="Trophy: ${got[t.id].reason}" src="trophies/${t.file}"></div>`
+    : '<div class="cell locked" aria-label="Not earned yet">?</div>').join('')
+}
+
+function openLightbox(id) {
+  const t = trophyById(id)
+  const earned = me().trophies.find((x) => x.gif === id)
+  if (!t || !earned) return
+  $('lbImg').src = 'trophies/' + t.file
+  $('lbReason').textContent = earned.reason
+  $('lbMeta').textContent = `level ${earned.level} · ${fmt(earned.ms)}`
+  const card = document.querySelector('.lbcard')
+  card.classList.remove('lbpop'); void card.offsetWidth; card.classList.add('lbpop')
+  $('lightbox').hidden = false
+}
+function closeLightbox() {
+  $('lightbox').hidden = true
+  $('lbImg').removeAttribute('src')   // stop the GIF animating behind the scenes
 }
 
 /* -------------------------------------------------------------- progress */
@@ -365,8 +382,27 @@ function drawProgress() {
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-home]')) { clearTimers(); show('home') }
   if (e.target.closest('[data-again]')) beginRound()
+  const cell = e.target.closest('.cell.got')
+  if (cell) openLightbox(cell.dataset.trophy)
+})
+// Tapping the backdrop or CLOSE dismisses; tapping the card itself does not.
+$('lightbox').addEventListener('click', (e) => {
+  if (e.target.id === 'lightbox' || e.target.id === 'lbClose') closeLightbox()
+})
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('lightbox').hidden) closeLightbox()
+  if (e.key === 'Enter' && document.activeElement?.classList.contains('got')) {
+    openLightbox(document.activeElement.dataset.trophy)
+  }
 })
 $('go').addEventListener('click', beginRound)
+
+// Start the round over mid-play. Confirm only once a streak is worth losing —
+// asking every time trains him to tap through the dialog without reading it.
+$('restart').addEventListener('click', () => {
+  if (streak >= 3 && !confirm(`Start over?\n\nYou're ${streak} in a row.`)) return
+  beginRound()
+})
 $('openTrophies').addEventListener('click', () => show('trophies'))
 
 // Parent gate: long-press the level badge. Nothing a 9-year-old trips over.

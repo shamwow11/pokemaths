@@ -74,6 +74,12 @@
   .pip.on{background:var(--lime)} .pip.now{background:var(--orange)}
   #lvl{font-family:var(--num);font-weight:800;font-size:19px;letter-spacing:0;white-space:nowrap}
   #shield{font-size:22px;color:var(--teal)} #shield.off{opacity:.2}
+  /* Deliberately small and set apart from the answer tiles — useful when he
+     knows he fat-fingered one, not something to hit by accident. */
+  #restart{font-size:19px;line-height:1;width:34px;height:34px;flex:none;border:2px solid var(--ink);
+           border-radius:10px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);
+           display:grid;place-items:center;font-weight:800}
+  #restart:active{transform:translate(2px,2px);box-shadow:none}
   #play .body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,3vh,30px);padding:0 20px;min-height:0}
   #q{font-family:var(--num);font-weight:800;text-align:center;letter-spacing:1px;line-height:1.05;
      font-size:clamp(42px,10.5vw,96px);text-shadow:4px 4px 0 var(--sky)}
@@ -105,13 +111,22 @@
   /* --- trophies --- */
   #trophies{background:var(--indigo)}
   #trophies .bar{background:var(--yellow)}
+  /* grid-auto-rows, not aspect-ratio: an aspect-ratio box contributes nothing
+     to row-track sizing here (the img is height:100% against an indefinite
+     track, so the track collapsed to the 6px of border and every cell
+     overlapped the one above it). An explicit row height cannot collapse. */
   #tgrid{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;
-         grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:12px;padding:14px;align-content:start}
-  .cell{aspect-ratio:6/5;border-radius:14px;border:3px solid;overflow:hidden;display:grid;place-items:center}
+         grid-template-columns:repeat(auto-fill,minmax(126px,1fr));
+         grid-auto-rows:clamp(96px,13vw,136px);
+         gap:12px;padding:14px;align-content:start}
+  .cell{border-radius:14px;border:3px solid;overflow:hidden;display:grid;place-items:center;
+        min-width:0;min-height:0;padding:0;background-clip:padding-box}
   .cell.got{border-color:var(--lime);background:#12121e}
   .cell.locked{border-color:rgba(233,255,112,.28);border-style:dashed;background:rgba(255,255,255,.05);
                font-family:var(--display);font-size:34px;color:rgba(233,255,112,.3)}
-  .cell img{width:100%;height:100%;object-fit:contain}
+  .cell img{width:100%;height:100%;object-fit:contain;display:block}
+  .cell.got{cursor:pointer}
+  .cell.got:active{transform:scale(.96)}
 
   /* --- progress --- */
   #progress .bar{background:var(--teal)} #progress .bar .title{color:var(--lime);text-shadow:none}
@@ -127,6 +142,20 @@
   .chip b{display:block;font-family:var(--num);font-size:18px;letter-spacing:0;font-weight:800}
   .chip i{font-style:normal;font-size:10px;font-weight:800;opacity:.7}
   .danger{background:var(--red);color:#fff}
+  /* tap a trophy to see it big */
+  #lightbox{position:fixed;inset:0;z-index:50;background:rgba(26,26,46,.92);
+            display:flex;align-items:center;justify-content:center;padding:22px}
+  #lightbox[hidden]{display:none}
+  .lbcard{background:var(--cream);border:3px solid var(--ink);border-radius:20px;
+          box-shadow:6px 6px 0 var(--ink);padding:14px;display:flex;flex-direction:column;
+          align-items:center;gap:10px;width:min(92vw,520px);max-height:92vh}
+  .lbcard img{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;
+              background:#12121e;display:block}
+  .lbreason{font-family:var(--display);font-size:clamp(20px,4vw,30px);letter-spacing:1px;
+            text-align:center;margin:0;line-height:1.1}
+  .lbmeta{margin:0;font-size:14px;font-weight:700;opacity:.7}
+  .lbpop{animation:lbin .18s ease-out}
+  @keyframes lbin{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -150,7 +179,7 @@
 </section>
 
 <section id="play" class="screen">
-  <div class="bar"><span id="lvl">LVL 1</span><span id="pips"></span><span id="shield">◆</span></div>
+  <div class="bar"><span id="lvl">LVL 1</span><span id="pips"></span><span id="shield">◆</span><button id="restart" title="Start this round over" aria-label="Start this round over">↻</button></div>
   <div class="body"><div id="q">7 × 8</div><div id="answers"></div></div>
   <div id="overlay"></div>
 </section>
@@ -164,6 +193,15 @@
   <div id="tgrid"></div>
 </section>
 
+<div id="lightbox" hidden>
+  <div class="lbcard lbpop">
+    <img id="lbImg" alt="">
+    <p class="lbreason" id="lbReason"></p>
+    <p class="lbmeta" id="lbMeta"></p>
+    <button class="btn" id="lbClose">CLOSE</button>
+  </div>
+</div>
+
 <section id="progress" class="screen">
   <div class="bar">
     <button class="btn sm plain" data-home>‹ BACK</button>
@@ -172,6 +210,6 @@
   <div id="pbody"></div>
 </section>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=8f8f2aaa"></script>
 </body>
 </html>
