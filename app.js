@@ -397,11 +397,14 @@ document.addEventListener('keydown', (e) => {
 })
 $('go').addEventListener('click', beginRound)
 
-// Start the round over mid-play. Confirm only once a streak is worth losing —
-// asking every time trains him to tap through the dialog without reading it.
-$('restart').addEventListener('click', () => {
-  if (streak >= 3 && !confirm(`Start over?\n\nYou're ${streak} in a row.`)) return
-  beginRound()
+// Leave the round and go back to the main screen. An abandoned round is not a
+// failed one: nothing is written, so it costs no streak, no record and no fact
+// strength. Confirm only once a streak is worth losing — asking every time
+// trains him to tap through the dialog without reading it.
+$('leaveRound').addEventListener('click', () => {
+  if (streak >= 3 && !confirm(`Leave this round?\n\nYou're ${streak} in a row.`)) return
+  clearTimers()
+  show('home')
 })
 $('openTrophies').addEventListener('click', () => show('trophies'))
 
